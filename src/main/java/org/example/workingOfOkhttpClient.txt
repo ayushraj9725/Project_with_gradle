@@ -1,0 +1,106 @@
+✅ What Your Code Does
+It sends an HTTP GET request to a remote server and prints the response.
+
+📦 Full Workflow Behind the Scenes:
+🧱 1. Create HTTP Client
+
+OkHttpClient client = new OkHttpClient();
+    This sets up an HTTP client.
+    Internally, it:
+    Manages a pool of connections.
+
+Sets up caching, timeouts, and dispatcher threads for async calls (even if you're not using them yet).
+It's thread-safe, so one instance can be reused for multiple requests.
+
+🌐 2. Define the URL
+
+String url = "https://jsonplaceholder.typicode.com/todos/1";
+You’re accessing a mock API (JSONPlaceholder) that returns a todo item in JSON format.
+
+🏗️ 3. Build the HTTP Request
+
+Request request = new Request.Builder()
+        .url(url)
+        .build();
+     You're constructing an HTTP GET request with the specified URL.
+     OkHttp builds a complete HTTP request behind the scenes:
+
+-> Method: GET
+-> URL
+-> Headers (defaults like User-Agent, etc., can be added if needed)
+
+🚀 4. Execute the Request
+
+Response response = client.newCall(request).execute();
+This is where the action happens:
+
+A new Call object is created.
+It opens a TCP connection (or reuses one from the pool).
+Sends the request to the server over the network.
+Waits for the server to respond.
+Receives the response and parses it into a Response object.
+
+⚠️ This is a blocking call (synchronous). Your thread will wait here until it gets a response or an error.
+
+🔍 5. Check for Errors
+
+if(!response.isSuccessful()){
+    System.out.println("Something went wrong !!!");
+}
+If the HTTP status code is not 200–299, the request failed logically (e.g., 404, 500).
+
+📄 6. Read the Response Body
+
+System.out.println(response.body().string());
+.body().string() reads the response body (JSON text in this case) and returns it as a String.
+
+Internally, this:
+
+Reads bytes from the input stream.
+
+Converts them to a UTF-8 string.
+
+Note: You can only read the response body once; it's a one-time stream.
+
+⚠️ 7. Catch Exceptions
+
+ catch(IOException e){
+    e.printStackTrace();
+}
+Handles errors like:
+Connection refused
+Timeout
+Unknown host
+Interrupted I/O
+
+🔁 Flow Recap
+
+1. Create client
+2. Build GET request
+3. Open connection to server
+4. Send GET request
+5. Wait for server response
+6. Read and print response body (JSON)
+🔍 Example Output
+
+
+
+{
+  "userId": 1,
+  "id": 1,
+  "title": "delectus aut autem",
+  "completed": false
+}
+
+🧠 TL;DR
+You're using OkHttp to synchronously make an HTTP GET request.
+
+Behind the scenes:
+Network connection is opened
+Request is built and sent
+Response is received and parsed
+It’s all managed by OkHttp’s efficient request dispatcher, connection pool, and I/O stream handling.
+If you want, I can also show you:
+How to make this request async
+How to parse the JSON response
+How to add headers or POST data
